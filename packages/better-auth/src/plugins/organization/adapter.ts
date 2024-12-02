@@ -229,6 +229,13 @@ export const getOrgAdapter = (
 			organizationId: string,
 			data: Partial<Organization>,
 		) => {
+			let organizationUpdate = { ...data };
+			if (data.metadata) {
+				organizationUpdate.metadata = typeof data.metadata === 'string' 
+					? data.metadata 
+					: JSON.stringify(data.metadata);
+			}
+
 			const organization = await adapter.update<Organization>({
 				model: "organization",
 				where: [
@@ -237,10 +244,7 @@ export const getOrgAdapter = (
 						value: organizationId,
 					},
 				],
-				update: {
-					...data,
-					metadata: data.metadata ? JSON.stringify(data.metadata) : undefined,
-				},
+				update: organizationUpdate,
 			});
 			if (!organization) {
 				return null;
